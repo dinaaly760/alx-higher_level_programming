@@ -1,0 +1,33 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  # Use the same Ubuntu 20.04 base image as the previous project
+  config.vm.box = "ubuntu/focal64"
+
+  # Forward X11 connection from the Vagrant machine to the host machine
+  config.ssh.forward_x11 = true
+
+  # Provision the machine with necessary packages
+  config.vm.provision "shell", inline: <<-SHELL
+    apt-get update
+    apt-get install -y python3 python3-pip
+    pip3 install turtle
+  SHELL
+
+  # Sync the current directory to the /app directory in the Vagrant machine
+  config.vm.synced_folder ".", "/app"
+
+  # Set the working directory to /app
+  config.vm.provider "virtualbox" do |vb|
+    vb.name = "rectangles-and-squares"
+    vb.cpus = 2
+    vb.memory = 4096
+    vb.customize ["setextradata", :id, "VBoxInternal2/SharedFoldersEnableSymlinksCreate//app", "1"]
+  end
+
+  config.vm.provision "shell", inline: <<-SHELL
+    cd /app
+    python3 101-main.py
+  SHELL
+end
