@@ -10,7 +10,12 @@ fi
 url="$1"
 
 # Send the GET request with the specified header using curl
-response=$(curl -H "X-School-User-Id: 98" "$url")
+response=$(curl -i -H "X-School-User-Id: 98" "$url")
+
+# Display the response code and headers
+echo "Response code: $?"
+echo "Response headers:"
+echo "$response" | grep -E "^HTTP|^X-"
 
 # Display the response body
-echo "$response"
+echo "$response" | sed -n '/^\r$/,$p'
